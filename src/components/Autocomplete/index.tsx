@@ -13,7 +13,7 @@ interface AutocompleteProps {
 
 const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
   const [userInput, setUserInput] = useState('');
-  const [showNoResults, setShowNoResults] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<OptionProps[]>([]);
 
   const inputSearchRef = useRef<HTMLInputElement>(null);
@@ -38,6 +38,7 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
 
   const handleSuggestionClick = (suggestionText: string) => {
     setUserInput(suggestionText);
+    setSelectedOption(suggestionText);
 
     // Close list
     setSuggestions([]);
@@ -70,7 +71,9 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
           ))}
         </ul>
       )}
-      {showNoResults && <p className="no-results">No results found.</p>}
+      {suggestions.length === 0 && userInput && !selectedOption && (
+        <span className="no-results">No results found.</span>
+      )}
     </div>
   );
 };
