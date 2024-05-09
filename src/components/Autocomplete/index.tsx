@@ -19,7 +19,21 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
   const inputSearchRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserInput(e.target.value);
+    const searchText = e.target.value;
+
+    setUserInput(searchText);
+
+    if (searchText === '') {
+      setSuggestions([]);
+      return;
+    }
+
+    // Filter suggestions with case insensitive
+    const filteredSuggestions = options.filter(({ name }) =>
+      name.toLowerCase().includes(searchText.trim().toLowerCase())
+    );
+
+    setSuggestions(filteredSuggestions);
   };
 
   const handleSuggestionClick = (suggestionText: string) => {
@@ -42,7 +56,6 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
         placeholder={placeholder}
         value={userInput}
         onChange={handleInputChange}
-        onFocus={() => setSuggestions(options)}
       />
       {suggestions.length > 0 && (
         <ul className="autocomplete-suggestions">
