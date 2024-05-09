@@ -1,9 +1,11 @@
 import './App.css';
-
+import Autocomplete from './components/Autocomplete';
+import data from './data.json';
 function App() {
+  console.log(data.results);
   return (
     <>
-      <p>Call Autocomplete here</p>
+      <Autocomplete placeholder={'search...'} options={data.results} />
     </>
   );
 }
