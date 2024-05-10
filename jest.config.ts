@@ -177,6 +177,7 @@ const config: Config = {
   // To process `*.tsx` files with `ts-jest`
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
+    '\\.css$': '<rootDir>/src/__mocks__/stylesMock.ts',
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
