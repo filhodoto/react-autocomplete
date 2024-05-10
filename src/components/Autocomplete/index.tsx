@@ -4,7 +4,7 @@ import HighlightedText from '../HighlightedText';
 
 interface OptionProps {
   id: string;
-  name: string;
+  value: string;
 }
 
 interface AutocompleteProps {
@@ -30,8 +30,8 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
     }
 
     // Filter suggestions with case insensitive
-    const filteredSuggestions = options.filter(({ name }) =>
-      name.toLowerCase().includes(searchText.trim().toLowerCase())
+    const filteredSuggestions = options.filter(({ value }) =>
+      value.toLowerCase().includes(searchText.trim().toLowerCase())
     );
 
     setSuggestions(filteredSuggestions);
@@ -61,13 +61,13 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
       />
       {suggestions.length > 0 && (
         <ul className="autocomplete-suggestions">
-          {suggestions.map(({ id, name }) => (
+          {suggestions.map(({ id, value }) => (
             <li
               key={id}
               className="autocomplete-suggestion"
-              onClick={() => handleSuggestionClick(name)}
+              onClick={() => handleSuggestionClick(value)}
             >
-              <HighlightedText text={name} searchText={userInput} />
+              <HighlightedText text={value} searchText={userInput} />
             </li>
           ))}
         </ul>

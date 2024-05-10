@@ -1,11 +1,44 @@
+import { useEffect, useState } from 'react';
 import './App.css';
 import Autocomplete from './components/Autocomplete';
-import data from './data.json';
+
+// Using Rick and Morty free public API. See more here: https://rickandmortyapi.com/
+const API_BASE_URL = 'https://rickandmortyapi.com/api/character/?name=rick';
+
 function App() {
-  console.log(data.results);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    // Fetch data from API
+    const fetchData = async () => {
+      try {
+        // NOTE:: API will always return an array, if there are no results it returns empty array
+        const response = await fetch(API_BASE_URL);
+        const { results } = await response.json();
+
+        // Format result to only get the data we want in autocomplete
+        const formatted = results.map(
+          ({ name, id }: { name: string; id: string }) => {
+            return { id, value: name };
+          }
+        );
+
+        setData(formatted);
+      } catch (error) {
+        console.error('Something went wrong: ', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   return (
     <>
-      <Autocomplete placeholder={'search...'} options={data.results} />
+      <h1>React Autocomplete Component</h1>
+      <Autocomplete placeholder={'search...'} options={data} />
     </>
   );
 }
