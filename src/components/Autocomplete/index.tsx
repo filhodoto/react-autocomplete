@@ -3,7 +3,7 @@ import './styles.css'; // Import stylesheet
 import HighlightedText from '../HighlightedText';
 
 interface OptionProps {
-  id: string;
+  id: number;
   value: string;
 }
 
@@ -17,7 +17,6 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
   const [activeSuggestion, setActiveSuggestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<OptionProps[]>([]);
-
   const inputSearchRef = useRef<HTMLInputElement>(null);
   const suggestionsListRef = useRef<HTMLUListElement>(null);
 
@@ -93,6 +92,7 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
     <div className="autocomplete-container">
       <input
         ref={inputSearchRef}
+        role="search"
         type="text"
         className="autocomplete-input"
         id="autocomplete-input"
