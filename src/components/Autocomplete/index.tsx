@@ -14,6 +14,7 @@ interface AutocompleteProps {
 
 const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
   const [userInput, setUserInput] = useState('');
+  const [activeSuggestion, setActiveSuggestion] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<OptionProps[]>([]);
 
@@ -39,13 +40,30 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
 
   const handleSuggestionClick = (suggestionText: string) => {
     setUserInput(suggestionText);
+
     setSelectedOption(suggestionText);
+
+    // Reset active suggestions index
+    setActiveSuggestion(0);
 
     // Close list
     setSuggestions([]);
 
     // Focus on input after choosing option from list
     inputSearchRef.current?.focus();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // If there are no suggestions shown, means there's no list to navigate so we do nothing
+    if (suggestions.length === 0) return;
+
+    if (e.key === 'ArrowDown' && activeSuggestion < suggestions.length) {
+      setActiveSuggestion((prevVal) => prevVal + 1);
+    } else if (e.key === 'ArrowUp' && activeSuggestion > 0) {
+      setActiveSuggestion((prevVal) => prevVal - 1);
+    } else if (e.key === 'Enter') {
+      handleSuggestionClick(suggestions[activeSuggestion].value);
+    }
   };
 
   useEffect(() => {
@@ -63,13 +81,16 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
         placeholder={placeholder}
         value={userInput}
         onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
       />
       {suggestions.length > 0 && (
         <ul className="autocomplete-suggestions">
-          {suggestions.map(({ id, value }) => (
+          {suggestions.map(({ id, value }, index) => (
             <li
               key={id}
-              className="autocomplete-suggestion"
+              className={`autocomplete-suggestion ${
+                index === activeSuggestion - 1 && 'active'
+              }`}
               onClick={() => handleSuggestionClick(value)}
             >
               <HighlightedText text={value} searchText={userInput} />

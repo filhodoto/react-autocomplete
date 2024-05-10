@@ -35,9 +35,12 @@
   cursor: pointer;
   border-bottom: 1px solid #eee;
   color: grey;
-  &:hover {
-    background-color: #f5f5f5;
-  }
+}
+
+.autocomplete-suggestion.active,
+.autocomplete-suggestion:hover {
+  background-color: #b9b9b9;
+  color: #eee;
 }
 
 .no-results,
