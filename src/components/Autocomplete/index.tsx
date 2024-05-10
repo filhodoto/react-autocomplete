@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './styles.css'; // Import stylesheet
 import HighlightedText from '../HighlightedText';
 
@@ -47,6 +47,11 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
     // Focus on input after choosing option from list
     inputSearchRef.current?.focus();
   };
+
+  useEffect(() => {
+    // Focus on input when it mounts. If this was part of a big form we wouldn't use this
+    inputSearchRef.current && inputSearchRef.current.focus();
+  }, []);
 
   return (
     <div className="autocomplete-container">
