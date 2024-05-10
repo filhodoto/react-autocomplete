@@ -19,6 +19,7 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
   const [suggestions, setSuggestions] = useState<OptionProps[]>([]);
 
   const inputSearchRef = useRef<HTMLInputElement>(null);
+  const suggestionsListRef = useRef<HTMLUListElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchText = e.target.value;
@@ -54,13 +55,30 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // If there are no suggestions shown, means there's no list to navigate so we do nothing
-    if (suggestions.length === 0) return;
+    const listElement = suggestionsListRef.current;
+
+    // If there are no suggestions shown, skip processing
+    if (suggestions.length === 0 || !listElement) return;
+
+    const activeItem = listElement.querySelector(
+      `li:nth-child(${activeSuggestion + 1})`
+    ) as HTMLLIElement;
 
     if (e.key === 'ArrowDown' && activeSuggestion < suggestions.length) {
       setActiveSuggestion((prevVal) => prevVal + 1);
-    } else if (e.key === 'ArrowUp' && activeSuggestion > 0) {
+
+      // Scroll down if needed
+      if (activeItem && activeItem.offsetTop > listElement.offsetHeight) {
+        listElement.scrollTop = activeItem.offsetTop;
+      }
+    } else if (e.key === 'ArrowUp' && activeSuggestion > 1) {
       setActiveSuggestion((prevVal) => prevVal - 1);
+
+      // Scroll up if needed
+      // NOTE:: Scroll up is not working great, calculations are not correct
+      if (activeItem && activeItem.offsetTop < listElement.scrollTop) {
+        listElement.scrollTop = activeItem.offsetTop;
+      }
     } else if (e.key === 'Enter') {
       handleSuggestionClick(suggestions[activeSuggestion].value);
     }
@@ -84,7 +102,7 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
         onKeyDown={handleKeyDown}
       />
       {suggestions.length > 0 && (
-        <ul className="autocomplete-suggestions">
+        <ul className="autocomplete-suggestions" ref={suggestionsListRef}>
           {suggestions.map(({ id, value }, index) => (
             <li
               key={id}
