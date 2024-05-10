@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import './styles.css'; // Import stylesheet
+import HighlightedText from '../HighlightedText';
 
 interface OptionProps {
   id: string;
@@ -66,7 +67,7 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
               className="autocomplete-suggestion"
               onClick={() => handleSuggestionClick(name)}
             >
-              {name}
+              <HighlightedText text={name} searchText={userInput} />
             </li>
           ))}
         </ul>
