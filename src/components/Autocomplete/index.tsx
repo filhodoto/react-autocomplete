@@ -88,13 +88,6 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
     }
   };
 
-  useEffect(() => {
-    // Automatically focus the input field when the component mounts
-    // NOTE: In a larger form, this might not be desirable.
-    // TODO:: Remove this
-    inputSearchRef.current && inputSearchRef.current.focus();
-  }, []);
-
   return (
     <div className="autocomplete-container">
       <input
