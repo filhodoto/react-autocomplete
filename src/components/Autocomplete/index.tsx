@@ -14,7 +14,7 @@ interface AutocompleteProps {
 
 const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
   const [userInput, setUserInput] = useState('');
-  const [activeSuggestion, setActiveSuggestion] = useState(0);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0); // currently highlighted suggestion in the list
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<OptionProps[]>([]);
   const inputSearchRef = useRef<HTMLInputElement>(null);
@@ -25,12 +25,13 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
 
     setUserInput(searchText);
 
+    // If input is empty, clear suggestions
     if (searchText === '') {
       setSuggestions([]);
       return;
     }
 
-    // Filter suggestions with case insensitive
+    // Filter suggestions based on the input text with case insensitive
     const filteredSuggestions = options.filter(({ value }) =>
       value.toLowerCase().includes(searchText.trim().toLowerCase())
     );
@@ -39,20 +40,23 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
   };
 
   const handleSuggestionClick = (suggestionText: string) => {
+    // Set input field to the selected suggestion
     setUserInput(suggestionText);
 
+    // Set the selected option
     setSelectedOption(suggestionText);
 
     // Reset active suggestions index
-    setActiveSuggestion(0);
+    setActiveSuggestionIndex(0);
 
-    // Close list
+    // Close suggestions list
     setSuggestions([]);
 
     // Focus on input after choosing option from list
     inputSearchRef.current?.focus();
   };
 
+  // Handle keyboard navigation within the suggestions list
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const listElement = suggestionsListRef.current;
 
@@ -60,31 +64,34 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
     if (suggestions.length === 0 || !listElement) return;
 
     const activeItem = listElement.querySelector(
-      `li:nth-child(${activeSuggestion + 1})`
+      `li:nth-child(${activeSuggestionIndex + 1})`
     ) as HTMLLIElement;
 
-    if (e.key === 'ArrowDown' && activeSuggestion < suggestions.length) {
-      setActiveSuggestion((prevVal) => prevVal + 1);
+    if (e.key === 'ArrowDown' && activeSuggestionIndex < suggestions.length) {
+      setActiveSuggestionIndex((prevVal) => prevVal + 1);
 
       // Scroll down if needed
       if (activeItem && activeItem.offsetTop > listElement.offsetHeight) {
         listElement.scrollTop = activeItem.offsetTop;
       }
-    } else if (e.key === 'ArrowUp' && activeSuggestion > 1) {
-      setActiveSuggestion((prevVal) => prevVal - 1);
+    } else if (e.key === 'ArrowUp' && activeSuggestionIndex > 1) {
+      // Navigate down in the suggestions list based on "activeSuggestionIndex" index
+      setActiveSuggestionIndex((prevVal) => prevVal - 1);
 
-      // Scroll up if needed
+      // Scroll up if the active item is out of view
       // TODO:: Scroll up is not working great, calculations are not correct
       if (activeItem && activeItem.offsetTop < listElement.scrollTop) {
         listElement.scrollTop = activeItem.offsetTop;
       }
     } else if (e.key === 'Enter') {
-      handleSuggestionClick(suggestions[activeSuggestion].value);
+      handleSuggestionClick(suggestions[activeSuggestionIndex].value);
     }
   };
 
   useEffect(() => {
-    // Focus on input when it mounts. If this was part of a big form we wouldn't use this
+    // Automatically focus the input field when the component mounts
+    // NOTE: In a larger form, this might not be desirable.
+    // TODO:: Remove this
     inputSearchRef.current && inputSearchRef.current.focus();
   }, []);
 
@@ -107,7 +114,7 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
             <li
               key={id}
               className={`autocomplete-suggestion ${
-                index === activeSuggestion - 1 && 'active'
+                index === activeSuggestionIndex - 1 && 'active'
               }`}
               onClick={() => handleSuggestionClick(value)}
             >
@@ -116,6 +123,7 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
           ))}
         </ul>
       )}
+      {/* Give user feedback if there is no match to its search */}
       {suggestions.length === 0 && userInput && !selectedOption && (
         <span className="no-results">No results found.</span>
       )}
