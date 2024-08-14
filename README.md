@@ -1,30 +1,39 @@
-# React + TypeScript + Vite
+# React Autocomplete
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project demonstrates a React auto-complete component that leverages the [Rick and Morty API](https://rickandmortyapi.com/) to provide character suggestions as the user types.
 
-Currently, two official plugins are available:
+This approach showcases the integration of a REST service within a React application for dynamic data retrieval and user interaction.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- Matching part of text highlighted
+- Keyboard navigation
+- Connected to a REST service
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Run project
 
-- Configure the top-level `parserOptions` property like this:
+Install dependencies
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+npm install
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+To run the development server:
+
+```bash
+npm run dev
+```
+
+To build for production & view build server:
+
+```bash
+npm run build
+npm run preview
+```
+
+## Technologies
+
+- React
+- Typescript
+- Jest
+- Testing Library
