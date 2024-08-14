@@ -74,7 +74,7 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
       setActiveSuggestion((prevVal) => prevVal - 1);
 
       // Scroll up if needed
-      // NOTE:: Scroll up is not working great, calculations are not correct
+      // TODO:: Scroll up is not working great, calculations are not correct
       if (activeItem && activeItem.offsetTop < listElement.scrollTop) {
         listElement.scrollTop = activeItem.offsetTop;
       }
