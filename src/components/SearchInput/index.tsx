@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import useDebounce from '../../hooks/useDebounce';
 
 interface SearchInputProps {
   placeholder?: string;
@@ -11,22 +12,27 @@ const SearchInput = ({
   selectedOption,
   updateSearch,
 }: SearchInputProps): JSX.Element => {
-  const [userInput, setUserInput] = useState('');
+  const [inputVal, setInputVal] = useState('');
+
+  // This is the value we will use to trigger the search in parent
+  const debouncedValue = useDebounce<string>(inputVal, 500);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchText = e.target.value;
 
     // Update state
-    setUserInput(searchText);
-
-    // Update search in parent
-    updateSearch(searchText);
+    setInputVal(searchText);
   };
 
   useEffect(() => {
-    // Update input value when user selected an option
-    setUserInput(selectedOption);
+    // Update input value when user selects an option in list
+    setInputVal(selectedOption);
   }, [selectedOption]);
+
+  useEffect(() => {
+    // Update search in parent with debounced value
+    updateSearch(debouncedValue);
+  }, [debouncedValue, updateSearch]);
 
   return (
     <input
@@ -35,7 +41,7 @@ const SearchInput = ({
       role="search"
       type="text"
       placeholder={placeholder}
-      value={userInput}
+      value={inputVal}
       onChange={handleInputChange}
     />
   );
