@@ -2,14 +2,15 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import Autocomplete from './components/Autocomplete';
 
-// Using Rick and Morty free public API. See more here: https://rickandmortyapi.com/
+// Using Rick and Morty free public API.
+// See more here: https://rickandmortyapi.com/
 const API_BASE_URL = 'https://rickandmortyapi.com/api/character/?name=rick';
 
 function App() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // Fetch data from API
+    // Fetch data from API asynchronously
     const fetchData = async () => {
       try {
         // NOTE:: API will always return an array, if there are no results it returns empty array
@@ -29,6 +30,7 @@ function App() {
       }
     };
 
+    // Call data from API on page load so we can pass the data to AutoComplete component
     fetchData();
   }, []);
 

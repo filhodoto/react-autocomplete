@@ -8,7 +8,7 @@ const dummyOptions = [
   { id: 19, value: 'Antenna Rick' },
   { id: 22, value: 'Aqua Rick' },
 ];
-describe('Autocomplete', () => {
+describe('Autocomplete tests', () => {
   it('should render input and show suggestions on typing', () => {
     render(<Autocomplete placeholder="Search..." options={dummyOptions} />);
 
