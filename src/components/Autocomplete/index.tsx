@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import './styles.css'; // Import stylesheet
 import HighlightedText from '../HighlightedText';
+import SuggestionsList from '../SuggestionsList';
 
-interface OptionProps {
+export interface OptionProps {
   id: number;
   value: string;
 }
@@ -99,23 +100,14 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
         placeholder={placeholder}
         value={userInput}
         onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
+        // onKeyDown={handleKeyDown}
       />
-      {suggestions.length > 0 && (
-        <ul className="autocomplete-suggestions" ref={suggestionsListRef}>
-          {suggestions.map(({ id, value }, index) => (
-            <li
-              key={id}
-              className={`autocomplete-suggestion ${
-                index === activeSuggestionIndex - 1 && 'active'
-              }`}
-              onClick={() => handleSuggestionClick(value)}
-            >
-              <HighlightedText text={value} searchText={userInput} />
-            </li>
-          ))}
-        </ul>
-      )}
+      <SuggestionsList
+        suggestions={suggestions}
+        userInput={userInput}
+        handleSuggestionClick={handleSuggestionClick}
+      />
+
       {/* Give user feedback if there is no match to its search */}
       {suggestions.length === 0 && userInput && !selectedOption && (
         <span className="no-results">No results found.</span>
