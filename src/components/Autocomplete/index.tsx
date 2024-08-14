@@ -1,8 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './styles.css'; // Import stylesheet
 import SuggestionsList from '../SuggestionsList';
 import SearchInput from '../SearchInput';
 
+// Using Rick and Morty free public API.
+// See more here: https://rickandmortyapi.com/
+const API_BASE_URL = 'https://rickandmortyapi.com/api/character';
 export interface OptionProps {
   id: number;
   name: string;
@@ -10,55 +13,60 @@ export interface OptionProps {
 
 interface AutocompleteProps {
   placeholder?: string;
-  options: OptionProps[];
 }
 
-const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
+const Autocomplete = ({ placeholder }: AutocompleteProps) => {
   const [searchVal, setSearchVal] = useState('');
-  const [selectedOption, setSelectedOption] = useState<string>('');
-  const [suggestions, setSuggestions] = useState<OptionProps[]>([]);
+  const [selected, setSelected] = useState<string>();
+  const [data, setData] = useState<OptionProps[]>([]);
 
-  const inputSearchRef = useRef<HTMLInputElement>(null);
+  // Fetch data from api and update list
+  const fetchData = useCallback(async (searchVal: string = '') => {
+    // Make Request to API
+    try {
+      // * NOTE:: If there are no results, API it returns "{error: 'There is nothing here'}"
+      const response = await fetch(`${API_BASE_URL}/?name=${searchVal}`);
+      const { results } = await response.json();
 
-  // TODO:: Handle input change
-  // 1. Get text from Input component
-  const fetchData = (text: string) => {
-    console.log('Make new request to API with --> ', text);
-    // 2. Make Request to API
+      // Update list data with results, or empty if there aren't any
+      setData(results ?? []);
 
-    // 3. Update suggestions
-    setSuggestions(options);
+      // Update search vale so we can highlight text in list
+      searchVal && setSearchVal(searchVal);
+    } catch (error) {
+      console.error('Something went wrong: ', error);
+    }
+  }, []);
 
-    // 4. Update search vale so we can highlight text in list
-    setSearchVal(text);
-  };
-
-  const handleSuggestionClick = (suggestionText: string) => {
+  const handleSelect = (suggestionText: string) => {
     // Set the selected option
-    setSelectedOption(suggestionText);
+    setSelected(suggestionText);
 
     // Close suggestions list
-    setSuggestions([]);
-
-    // Focus on input after choosing option from list
-    inputSearchRef.current?.focus();
+    setData([]);
   };
+
+  useEffect(() => {
+    // Call data from API on page load so we can pass the data to AutoComplete component
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="autocomplete-container">
       <SearchInput
         placeholder={placeholder}
         updateSearch={fetchData}
-        selectedOption={selectedOption}
+        selected={selected}
       />
       <SuggestionsList
-        suggestions={suggestions}
+        suggestions={data}
         searchVal={searchVal}
-        handleSuggestionClick={handleSuggestionClick}
+        handleClick={handleSelect}
       />
 
       {/* Give user feedback if there is no match to its search */}
-      {suggestions.length === 0 && searchVal && !selectedOption && (
+      {data.length === 0 && searchVal && !selected && (
         <span className="no-results">No results found.</span>
       )}
     </div>
