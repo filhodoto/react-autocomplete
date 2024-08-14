@@ -16,14 +16,8 @@ function App() {
         // NOTE:: API will always return an array, if there are no results it returns empty array
         const response = await fetch(API_BASE_URL);
         const { results } = await response.json();
-        // Format result to only get the data we want in autocomplete
-        const formatted = results.map(
-          ({ name, id }: { name: string; id: string }) => {
-            return { id, value: name };
-          }
-        );
 
-        setData(formatted);
+        setData(results);
       } catch (error) {
         console.error('Something went wrong: ', error);
       }

@@ -20,15 +20,15 @@ const SuggestionsList = ({
 
   return suggestions.length ? (
     <ul className="autocomplete-suggestions" ref={suggestionsListRef}>
-      {suggestions.map(({ id, value }, index) => (
+      {suggestions.map(({ id, name }, index) => (
         <li
           key={id}
           className={`autocomplete-suggestion ${
             index === activeSuggestionIndex - 1 && 'active'
           }`}
-          onClick={() => handleSuggestionClick(value)}
+          onClick={() => handleSuggestionClick(name)}
         >
-          <HighlightedText text={value} searchText={searchVal} />
+          <HighlightedText text={name} searchText={searchVal} />
         </li>
       ))}
     </ul>

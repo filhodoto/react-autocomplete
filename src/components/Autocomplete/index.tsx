@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import './styles.css'; // Import stylesheet
 import SuggestionsList from '../SuggestionsList';
 import SearchInput from '../SearchInput';
 
 export interface OptionProps {
   id: number;
-  value: string;
+  name: string;
 }
 
 interface AutocompleteProps {
