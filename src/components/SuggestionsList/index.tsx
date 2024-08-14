@@ -3,13 +3,13 @@ import HighlightedText from '../HighlightedText';
 import { OptionProps } from '../Autocomplete';
 
 interface SuggestionsListProps {
-  userInput: string;
+  searchVal: string;
   suggestions: OptionProps[];
   handleSuggestionClick: (val: string) => void;
 }
 
 const SuggestionsList = ({
-  userInput,
+  searchVal,
   suggestions,
   handleSuggestionClick,
 }: SuggestionsListProps): JSX.Element => {
@@ -28,7 +28,7 @@ const SuggestionsList = ({
           }`}
           onClick={() => handleSuggestionClick(value)}
         >
-          <HighlightedText text={value} searchText={userInput} />
+          <HighlightedText text={value} searchText={searchVal} />
         </li>
       ))}
     </ul>

@@ -39,7 +39,7 @@ function App() {
       <h1>React Autocomplete Component</h1>
       {/* Only render Autocomplete when we have data to search */}
       {data.length > 0 && (
-        <Autocomplete placeholder={'search...'} options={data} />
+        <Autocomplete placeholder="Search..." options={data} />
       )}
     </>
   );

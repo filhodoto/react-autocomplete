@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import './styles.css'; // Import stylesheet
-import HighlightedText from '../HighlightedText';
 import SuggestionsList from '../SuggestionsList';
+import SearchInput from '../SearchInput';
 
 export interface OptionProps {
   id: number;
@@ -9,46 +9,33 @@ export interface OptionProps {
 }
 
 interface AutocompleteProps {
-  placeholder: string;
+  placeholder?: string;
   options: OptionProps[];
 }
 
 const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
-  const [userInput, setUserInput] = useState('');
-  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0); // currently highlighted suggestion in the list
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [searchVal, setSearchVal] = useState('');
+  const [selectedOption, setSelectedOption] = useState<string>('');
   const [suggestions, setSuggestions] = useState<OptionProps[]>([]);
+
   const inputSearchRef = useRef<HTMLInputElement>(null);
-  const suggestionsListRef = useRef<HTMLUListElement>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchText = e.target.value;
+  // TODO:: Handle input change
+  // 1. Get text from Input component
+  const fetchData = (text: string) => {
+    console.log('Make new request to API with --> ', text);
+    // 2. Make Request to API
 
-    setUserInput(searchText);
+    // 3. Update suggestions
+    setSuggestions(options);
 
-    // If input is empty, clear suggestions
-    if (searchText === '') {
-      setSuggestions([]);
-      return;
-    }
-
-    // Filter suggestions based on the input text with case insensitive
-    const filteredSuggestions = options.filter(({ value }) =>
-      value.toLowerCase().includes(searchText.trim().toLowerCase())
-    );
-
-    setSuggestions(filteredSuggestions);
+    // 4. Update search vale so we can highlight text in list
+    setSearchVal(text);
   };
 
   const handleSuggestionClick = (suggestionText: string) => {
-    // Set input field to the selected suggestion
-    setUserInput(suggestionText);
-
     // Set the selected option
     setSelectedOption(suggestionText);
-
-    // Reset active suggestions index
-    setActiveSuggestionIndex(0);
 
     // Close suggestions list
     setSuggestions([]);
@@ -57,59 +44,21 @@ const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
     inputSearchRef.current?.focus();
   };
 
-  // Handle keyboard navigation within the suggestions list
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const listElement = suggestionsListRef.current;
-
-    // If there are no suggestions shown, skip processing
-    if (suggestions.length === 0 || !listElement) return;
-
-    const activeItem = listElement.querySelector(
-      `li:nth-child(${activeSuggestionIndex + 1})`
-    ) as HTMLLIElement;
-
-    if (e.key === 'ArrowDown' && activeSuggestionIndex < suggestions.length) {
-      setActiveSuggestionIndex((prevVal) => prevVal + 1);
-
-      // Scroll down if needed
-      if (activeItem && activeItem.offsetTop > listElement.offsetHeight) {
-        listElement.scrollTop = activeItem.offsetTop;
-      }
-    } else if (e.key === 'ArrowUp' && activeSuggestionIndex > 1) {
-      // Navigate down in the suggestions list based on "activeSuggestionIndex" index
-      setActiveSuggestionIndex((prevVal) => prevVal - 1);
-
-      // Scroll up if the active item is out of view
-      // TODO:: Scroll up is not working great, calculations are not correct
-      if (activeItem && activeItem.offsetTop < listElement.scrollTop) {
-        listElement.scrollTop = activeItem.offsetTop;
-      }
-    } else if (e.key === 'Enter') {
-      handleSuggestionClick(suggestions[activeSuggestionIndex].value);
-    }
-  };
-
   return (
     <div className="autocomplete-container">
-      <input
-        ref={inputSearchRef}
-        role="search"
-        type="text"
-        className="autocomplete-input"
-        id="autocomplete-input"
+      <SearchInput
         placeholder={placeholder}
-        value={userInput}
-        onChange={handleInputChange}
-        // onKeyDown={handleKeyDown}
+        updateSearch={fetchData}
+        selectedOption={selectedOption}
       />
       <SuggestionsList
         suggestions={suggestions}
-        userInput={userInput}
+        searchVal={searchVal}
         handleSuggestionClick={handleSuggestionClick}
       />
 
       {/* Give user feedback if there is no match to its search */}
-      {suggestions.length === 0 && userInput && !selectedOption && (
+      {suggestions.length === 0 && searchVal && !selectedOption && (
         <span className="no-results">No results found.</span>
       )}
     </div>
