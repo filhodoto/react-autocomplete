@@ -4,7 +4,7 @@ import Autocomplete from './components/Autocomplete';
 
 // Using Rick and Morty free public API.
 // See more here: https://rickandmortyapi.com/
-const API_BASE_URL = 'https://rickandmortyapi.com/api/character/?name=rick';
+const API_BASE_URL = 'https://rickandmortyapi.com/api/character/';
 
 function App() {
   const [data, setData] = useState([]);
@@ -16,7 +16,6 @@ function App() {
         // NOTE:: API will always return an array, if there are no results it returns empty array
         const response = await fetch(API_BASE_URL);
         const { results } = await response.json();
-
         // Format result to only get the data we want in autocomplete
         const formatted = results.map(
           ({ name, id }: { name: string; id: string }) => {
