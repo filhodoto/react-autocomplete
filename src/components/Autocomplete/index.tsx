@@ -23,7 +23,8 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
 
   // Fetch data from api and update list
-  const fetchData = useCallback(async (searchVal: string = '') => {
+  const fetchData = useCallback(async () => {
+    console.log('Fetch data with value = ', searchVal);
     // Make Request to API
     try {
       // * NOTE:: If there are no results, API it returns "{error: 'There is nothing here'}"
@@ -41,7 +42,7 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
     } catch (error) {
       console.error('Something went wrong: ', error);
     }
-  }, []);
+  }, [searchVal]);
 
   const handleSelect = (suggestionText: string) => {
     // Set the selected option
@@ -52,15 +53,15 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
   };
 
   useEffect(() => {
-    // Call data from API on page load so we can pass the data to AutoComplete component
-    fetchData();
-  }, [fetchData]);
+    // Fetch data only if there is a value to search
+    searchVal && fetchData();
+  }, [searchVal, fetchData]);
 
   return (
     <div className="autocomplete-container">
       <SearchInput
         placeholder={placeholder}
-        updateSearch={fetchData}
+        setSearchVal={setSearchVal}
         selected={selected}
         setActiveSuggestionIndex={setActiveSuggestionIndex}
         activeSuggestionIndex={activeSuggestionIndex}

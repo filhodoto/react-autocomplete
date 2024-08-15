@@ -4,7 +4,7 @@ import useDebounce from '../../hooks/useDebounce';
 interface SearchInputProps {
   placeholder?: string;
   selected?: string;
-  updateSearch: (val: string) => void;
+  setSearchVal: (val: string) => void;
   setActiveSuggestionIndex: (index: number) => void;
   activeSuggestionIndex: number;
   suggestionsCount: number;
@@ -13,7 +13,7 @@ interface SearchInputProps {
 const SearchInput = ({
   placeholder,
   selected,
-  updateSearch,
+  setSearchVal,
   setActiveSuggestionIndex,
   activeSuggestionIndex,
   suggestionsCount,
@@ -93,10 +93,10 @@ const SearchInput = ({
   useEffect(() => {
     // Only update the search if the input change wasn't due to a selection
     if (!isSelecting.current) {
-      // Run a new API request with new value
-      updateSearch(debouncedValue);
+      // Update search state in parent, which will run a new API request
+      setSearchVal(debouncedValue);
     }
-  }, [debouncedValue, updateSearch]);
+  }, [debouncedValue, setSearchVal]);
 
   return (
     <input
