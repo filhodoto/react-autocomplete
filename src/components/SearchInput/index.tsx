@@ -63,10 +63,6 @@ const SearchInput = ({
         ) {
           // Indicate that a selection is being made
           isSelecting.current = true;
-          console.log(
-            'first',
-            document.getElementById(`active-option-${activeSuggestionIndex}`)
-          );
 
           // Simulate a click on the currently active suggestion to select it
           (
@@ -94,7 +90,7 @@ const SearchInput = ({
     // Only update the search if the input change wasn't due to a selection
     if (!isSelecting.current) {
       // Update search state in parent, which will run a new API request
-      setSearchVal(debouncedValue);
+      setSearchVal(debouncedValue.trim());
     }
   }, [debouncedValue, setSearchVal]);
 

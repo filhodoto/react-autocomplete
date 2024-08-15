@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import './styles.css';
 import SuggestionsList from '../SuggestionsList';
 import SearchInput from '../SearchInput';
@@ -22,9 +22,18 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
   const [data, setData] = useState<OptionProps[]>([]);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
 
+  // Setup a useRef to use as cache between re-renders
+  const cacheRef = useRef<{ [key: string]: OptionProps[] }>({});
+
   // Fetch data from api and update list
   const fetchData = useCallback(async () => {
-    console.log('Fetch data with value = ', searchVal);
+    // Check if we have this search saved in cache
+    if (cacheRef.current[searchVal]) {
+      // return cached value and prevent an unnecessary request
+      setData(cacheRef.current[searchVal]);
+      return;
+    }
+
     // Make Request to API
     try {
       // * NOTE:: If there are no results, API it returns "{error: 'There is nothing here'}"
@@ -32,10 +41,13 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
       const { results } = await response.json();
 
       // Update list data with results, or empty if there aren't any
-      setData(results ?? []);
+      const fetchedData = results ?? [];
 
-      // Update search vale so we can highlight text in list
-      searchVal && setSearchVal(searchVal);
+      // Update state
+      setData(fetchedData);
+
+      // Store the fetched data in the cache
+      cacheRef.current[searchVal] = fetchedData;
 
       // Reset the active suggestion index when data changes
       setActiveSuggestionIndex(0);
