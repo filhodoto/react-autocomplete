@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import useDebounce from '../../hooks/useDebounce';
 
 interface SearchInputProps {
@@ -44,11 +44,12 @@ const SearchInput = ({
     <input
       id="autocomplete-input"
       className="autocomplete-input"
-      role="search"
-      type="text"
+      role="combobox"
+      aria-autocomplete="list"
       placeholder={placeholder}
       value={inputVal}
       onChange={handleInputChange}
+      aria-expanded={!!debouncedValue} // Indicate if suggestions might be displayed
     />
   );
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import './styles.css'; // Import stylesheet
+import './styles.css';
 import SuggestionsList from '../SuggestionsList';
 import SearchInput from '../SearchInput';
 
@@ -49,8 +49,7 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
   useEffect(() => {
     // Call data from API on page load so we can pass the data to AutoComplete component
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchData]);
 
   return (
     <div className="autocomplete-container">
@@ -67,7 +66,9 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
 
       {/* Give user feedback if there is no match to its search */}
       {data.length === 0 && searchVal && !selected && (
-        <span className="no-results">No results found.</span>
+        <span id="no-results" className="no-results">
+          No results found.
+        </span>
       )}
     </div>
   );
