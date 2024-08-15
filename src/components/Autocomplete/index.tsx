@@ -9,6 +9,7 @@ const API_BASE_URL = 'https://rickandmortyapi.com/api/character';
 export interface OptionProps {
   id: number;
   name: string;
+  origin: { name: string };
 }
 
 interface AutocompleteProps {
@@ -19,6 +20,7 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
   const [searchVal, setSearchVal] = useState('');
   const [selected, setSelected] = useState<string>();
   const [data, setData] = useState<OptionProps[]>([]);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
 
   // Fetch data from api and update list
   const fetchData = useCallback(async (searchVal: string = '') => {
@@ -33,6 +35,9 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
 
       // Update search vale so we can highlight text in list
       searchVal && setSearchVal(searchVal);
+
+      // Reset the active suggestion index when data changes
+      setActiveSuggestionIndex(0);
     } catch (error) {
       console.error('Something went wrong: ', error);
     }
@@ -57,11 +62,15 @@ const Autocomplete = ({ placeholder }: AutocompleteProps) => {
         placeholder={placeholder}
         updateSearch={fetchData}
         selected={selected}
+        setActiveSuggestionIndex={setActiveSuggestionIndex}
+        activeSuggestionIndex={activeSuggestionIndex}
+        suggestionsCount={data.length}
       />
       <SuggestionsList
         suggestions={data}
         searchVal={searchVal}
         handleClick={handleSelect}
+        activeSuggestionIndex={activeSuggestionIndex}
       />
 
       {/* Give user feedback if there is no match to its search */}

@@ -31,6 +31,9 @@
 }
 
 .autocomplete-suggestion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
@@ -41,6 +44,14 @@
 .autocomplete-suggestion:hover {
   background-color: #b9b9b9;
   color: #eee;
+}
+
+.autocomplete-suggestion p {
+  margin: 0;
+}
+
+.autocomplete-suggestion__extra {
+  font-size: 12px;
 }
 
 .no-results,
