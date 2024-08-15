@@ -1,4 +1,5 @@
 // Component to implement highlight in suggested text
+// * NOTE:: This logic is necessary to avoid using dangerouslySetInnerHTML, which can expose your application to cross-site scripting (XSS) attacks
 const HighlightedText = ({
   text,
   searchText,
@@ -21,15 +22,13 @@ const HighlightedText = ({
   return (
     <>
       {/* Iterate over the textParts and highlight the search text */}
-      {textParts.map((part, index) => (
-        <span key={index}>
-          {part.toLowerCase() === searchText.toLowerCase() ? (
-            <mark>{part}</mark>
-          ) : (
-            part
-          )}
-        </span>
-      ))}
+      {textParts.map((part, index) =>
+        part.toLowerCase() === searchText.toLowerCase() ? (
+          <mark key={index}>{part}</mark>
+        ) : (
+          <span key={index}>{part}</span>
+        )
+      )}
     </>
   );
 };
