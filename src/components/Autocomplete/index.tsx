@@ -1,131 +1,96 @@
-import React, { useState, useRef, useEffect } from 'react';
-import './styles.css'; // Import stylesheet
-import HighlightedText from '../HighlightedText';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import './styles.css';
+import SuggestionsList from '../SuggestionsList';
+import SearchInput from '../SearchInput';
 
-interface OptionProps {
+// Using Rick and Morty free public API.
+// See more here: https://rickandmortyapi.com/
+const API_BASE_URL = 'https://rickandmortyapi.com/api/character';
+export interface OptionProps {
   id: number;
-  value: string;
+  name: string;
+  origin: { name: string };
 }
 
 interface AutocompleteProps {
-  placeholder: string;
-  options: OptionProps[];
+  placeholder?: string;
 }
 
-const Autocomplete = ({ placeholder, options }: AutocompleteProps) => {
-  const [userInput, setUserInput] = useState('');
-  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0); // currently highlighted suggestion in the list
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [suggestions, setSuggestions] = useState<OptionProps[]>([]);
-  const inputSearchRef = useRef<HTMLInputElement>(null);
-  const suggestionsListRef = useRef<HTMLUListElement>(null);
+const Autocomplete = ({ placeholder }: AutocompleteProps) => {
+  const [searchVal, setSearchVal] = useState('');
+  const [selected, setSelected] = useState<string>();
+  const [data, setData] = useState<OptionProps[]>([]);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchText = e.target.value;
+  // Setup a useRef to use as cache between re-renders
+  const cacheRef = useRef<{ [key: string]: OptionProps[] }>({});
 
-    setUserInput(searchText);
-
-    // If input is empty, clear suggestions
-    if (searchText === '') {
-      setSuggestions([]);
+  // Fetch data from api and update list
+  const fetchData = useCallback(async () => {
+    // Check if we have this search saved in cache
+    if (cacheRef.current[searchVal]) {
+      // return cached value and prevent an unnecessary request
+      setData(cacheRef.current[searchVal]);
       return;
     }
 
-    // Filter suggestions based on the input text with case insensitive
-    const filteredSuggestions = options.filter(({ value }) =>
-      value.toLowerCase().includes(searchText.trim().toLowerCase())
-    );
+    // Make Request to API
+    try {
+      // * NOTE:: If there are no results, API it returns "{error: 'There is nothing here'}"
+      const response = await fetch(`${API_BASE_URL}/?name=${searchVal}`);
+      const { results } = await response.json();
 
-    setSuggestions(filteredSuggestions);
-  };
+      // Update list data with results, or empty if there aren't any
+      const fetchedData = results ?? [];
 
-  const handleSuggestionClick = (suggestionText: string) => {
-    // Set input field to the selected suggestion
-    setUserInput(suggestionText);
+      // Update state
+      setData(fetchedData);
 
+      // Store the fetched data in the cache
+      cacheRef.current[searchVal] = fetchedData;
+
+      // Reset the active suggestion index when data changes
+      setActiveSuggestionIndex(0);
+    } catch (error) {
+      console.error('Something went wrong: ', error);
+    }
+  }, [searchVal]);
+
+  const handleSelect = (suggestionText: string) => {
     // Set the selected option
-    setSelectedOption(suggestionText);
-
-    // Reset active suggestions index
-    setActiveSuggestionIndex(0);
+    setSelected(suggestionText);
 
     // Close suggestions list
-    setSuggestions([]);
-
-    // Focus on input after choosing option from list
-    inputSearchRef.current?.focus();
-  };
-
-  // Handle keyboard navigation within the suggestions list
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const listElement = suggestionsListRef.current;
-
-    // If there are no suggestions shown, skip processing
-    if (suggestions.length === 0 || !listElement) return;
-
-    const activeItem = listElement.querySelector(
-      `li:nth-child(${activeSuggestionIndex + 1})`
-    ) as HTMLLIElement;
-
-    if (e.key === 'ArrowDown' && activeSuggestionIndex < suggestions.length) {
-      setActiveSuggestionIndex((prevVal) => prevVal + 1);
-
-      // Scroll down if needed
-      if (activeItem && activeItem.offsetTop > listElement.offsetHeight) {
-        listElement.scrollTop = activeItem.offsetTop;
-      }
-    } else if (e.key === 'ArrowUp' && activeSuggestionIndex > 1) {
-      // Navigate down in the suggestions list based on "activeSuggestionIndex" index
-      setActiveSuggestionIndex((prevVal) => prevVal - 1);
-
-      // Scroll up if the active item is out of view
-      // TODO:: Scroll up is not working great, calculations are not correct
-      if (activeItem && activeItem.offsetTop < listElement.scrollTop) {
-        listElement.scrollTop = activeItem.offsetTop;
-      }
-    } else if (e.key === 'Enter') {
-      handleSuggestionClick(suggestions[activeSuggestionIndex].value);
-    }
+    setData([]);
   };
 
   useEffect(() => {
-    // Automatically focus the input field when the component mounts
-    // NOTE: In a larger form, this might not be desirable.
-    // TODO:: Remove this
-    inputSearchRef.current && inputSearchRef.current.focus();
-  }, []);
+    // Fetch data only if there is a value to search
+    searchVal && fetchData();
+  }, [searchVal, fetchData]);
 
   return (
     <div className="autocomplete-container">
-      <input
-        ref={inputSearchRef}
-        role="search"
-        type="text"
-        className="autocomplete-input"
-        id="autocomplete-input"
+      <SearchInput
         placeholder={placeholder}
-        value={userInput}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
+        setSearchVal={setSearchVal}
+        selected={selected}
+        setActiveSuggestionIndex={setActiveSuggestionIndex}
+        activeSuggestionIndex={activeSuggestionIndex}
+        suggestionsCount={data.length}
       />
-      {suggestions.length > 0 && (
-        <ul className="autocomplete-suggestions" ref={suggestionsListRef}>
-          {suggestions.map(({ id, value }, index) => (
-            <li
-              key={id}
-              className={`autocomplete-suggestion ${
-                index === activeSuggestionIndex - 1 && 'active'
-              }`}
-              onClick={() => handleSuggestionClick(value)}
-            >
-              <HighlightedText text={value} searchText={userInput} />
-            </li>
-          ))}
-        </ul>
-      )}
+      <SuggestionsList
+        suggestions={data}
+        searchVal={searchVal}
+        handleClick={handleSelect}
+        activeSuggestionIndex={activeSuggestionIndex}
+      />
+
       {/* Give user feedback if there is no match to its search */}
-      {suggestions.length === 0 && userInput && !selectedOption && (
-        <span className="no-results">No results found.</span>
+      {data.length === 0 && searchVal && !selected && (
+        <span id="no-results" className="no-results">
+          No results found.
+        </span>
       )}
     </div>
   );

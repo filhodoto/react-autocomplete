@@ -31,6 +31,9 @@
 }
 
 .autocomplete-suggestion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 10px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
@@ -43,14 +46,17 @@
   color: #eee;
 }
 
-.no-results,
-.loading {
+.autocomplete-suggestion p {
+  margin: 0;
+}
+
+.autocomplete-suggestion__extra {
+  font-size: 12px;
+}
+
+.no-results {
   margin-top: 10px;
   text-align: center;
   font-style: italic;
   color: #aaa;
-}
-
-.loading {
-  font-weight: bold;
 }
