@@ -54,14 +54,9 @@
   font-size: 12px;
 }
 
-.no-results,
-.loading {
+.no-results {
   margin-top: 10px;
   text-align: center;
   font-style: italic;
   color: #aaa;
-}
-
-.loading {
-  font-weight: bold;
 }
