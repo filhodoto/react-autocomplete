@@ -39,16 +39,19 @@ const SearchInput = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        // If not at the last suggestion, move the active index down by one
-        if (activeSuggestionIndex < suggestionsCount - 1)
-          setActiveSuggestionIndex(activeSuggestionIndex + 1);
+        // Move the active index down and navigate to top of list if we've reached last option
+        activeSuggestionIndex < suggestionsCount - 1
+          ? setActiveSuggestionIndex(activeSuggestionIndex + 1)
+          : setActiveSuggestionIndex(0);
+
         break;
 
       case 'ArrowUp':
         e.preventDefault();
-        // If not at the first suggestion, move the active index up by one
-        if (activeSuggestionIndex > 0)
-          setActiveSuggestionIndex(activeSuggestionIndex - 1);
+        // Move the active index up and navigate to bottom of list if we've reached first option
+        activeSuggestionIndex > 0
+          ? setActiveSuggestionIndex(activeSuggestionIndex - 1)
+          : setActiveSuggestionIndex(suggestionsCount - 1);
         break;
 
       case 'Enter':
