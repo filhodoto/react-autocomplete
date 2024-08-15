@@ -6,9 +6,11 @@ This approach showcases the integration of a REST service within a React applica
 
 ## Features
 
-- Matching part of text highlighted
-- Keyboard navigation
-- Connected to a REST service
+- Text highlighting based on search criteria
+- Keyboard accessibility
+- REST API integration
+- Data caching
+- Input debouncing for optimized API calls
 
 ## Run project
 
@@ -31,9 +33,13 @@ npm run build
 npm run preview
 ```
 
-## Technologies
+## Tech Stack
 
-- React
-- Typescript
-- Jest
-- Testing Library
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Jest](https://jestjs.io/)
+- [Testing Library](https://testing-library.com/)
+
+### Author
+
+##### Gonçalo Ramalho
