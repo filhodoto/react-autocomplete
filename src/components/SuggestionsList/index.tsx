@@ -29,7 +29,9 @@ const SuggestionsList = ({
       // If the active element exists, scroll it into view
       // `scrollIntoView` with `block: 'nearest'` ensures the active suggestion
       // is brought into view, but only if it is out of the visible area
-      if (activeElement) activeElement.scrollIntoView({ block: 'nearest' });
+      if (activeElement && typeof activeElement.scrollIntoView === 'function') {
+        activeElement.scrollIntoView({ block: 'nearest' });
+      }
     }
   }, [activeSuggestionIndex, suggestions]);
 
