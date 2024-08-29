@@ -33,6 +33,7 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+// TODO:: FIX "A worker process has failed to exit gracefully and has been force exited." error
 describe('Autocomplete tests', () => {
   it('should render input and show suggestions when user types common text value between options', async () => {
     render(<Autocomplete placeholder="Search..." />);
